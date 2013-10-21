@@ -5,9 +5,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
-#include "../include/main.h"
+#include "../include/imprimidor.h"
 #include "../include/filters.h"
-
+#include "../include/main.h"
 /**
  * Dejamos los tres archivos globales, asi no es necesario pasarlos como parametros en la funcion recursiva
  */
@@ -42,9 +42,9 @@ int main (int argc, char *argv[])
   }
 
   /* 3. Imprimir el UID y PID en los archivos */
-  fprintf(recorrido,   "Id_usuario: %d Id_programa: %d", getuid(), getpid());
-  fprintf(directorios, "Id_usuario: %d Id_programa: %d", getuid(), getpid());
-  fprintf(archivos,    "Id_usuario: %d Id_programa: %d", getuid(), getpid());
+  imprimidor(recorrido,   "Id_usuario: %d Id_programa: %d", getuid(), getpid());
+  imprimidor(directorios, "Id_usuario: %d Id_programa: %d", getuid(), getpid());
+  imprimidor(archivos,    "Id_usuario: %d Id_programa: %d", getuid(), getpid());
 
   /* 4. Segun los argumentos entregados por el usuario, ejecutar el recorrido acorde al path entregado */
   switch (argc) {
@@ -89,22 +89,22 @@ void recorrer(const char path[MAXPATHLEN], const char current_directory[MAXPATHL
 
   if (number_directories >= 0) {
     /* 1. Imprimir a directorios.txt */
-    fprintf(directorios, "\n%*.s", indent, " ");
-    fprintf(directorios, "Directorio %s contiene: %d Carpetas y %d Archivos", current_directory, number_directories, number_files);
+    imprimidor(directorios, "\n%*.s", indent, " ");
+    imprimidor(directorios, "Directorio %s contiene: %d Carpetas y %d Archivos", current_directory, number_directories, number_files);
 
     /* 2. Imprimir a archivos.txt los archivos con su ubicacion y permisos */
     for(i = 0; i < number_files; i++) {
-      fprintf(archivos, "\n%s ubicado en %s tiene permisos de: ", file[i]->d_name, current_directory);
+      imprimidor(archivos, "\n%s ubicado en %s tiene permisos de: ", file[i]->d_name, current_directory);
       sprintf(current_file, "%s/%s", path, file[i]->d_name);
-      if ( access(current_file, R_OK) == 0 ) fprintf(archivos, "Lectura, ");
-      if ( access(current_file, W_OK) == 0 ) fprintf(archivos, "Escritura, ");
-      if ( access(current_file, X_OK) == 0 ) fprintf(archivos, "Ejecucion");
+      if ( access(current_file, R_OK) == 0 ) imprimidor(archivos, "Lectura, ");
+      if ( access(current_file, W_OK) == 0 ) imprimidor(archivos, "Escritura, ");
+      if ( access(current_file, X_OK) == 0 ) imprimidor(archivos, "Ejecucion");
       free(file[i]);
     }
 
     /* 3. Imprimir a recorrido.txt la carpeta actual con si nivel de indentacion*/
     for (i = 0; i < number_directories; i++) {
-      fprintf(recorrido, "\n%s", directory[i]->d_name);
+      imprimidor(recorrido, "\n%s", directory[i]->d_name);
       sprintf(next_directory, "%s/%s", path, directory[i]->d_name);  // Forma el path incluyendo el directorio nuevo path = path/dir_nuevo
       recorrer(next_directory, directory[i]->d_name, indent + 4);
       free(directory[i]);
