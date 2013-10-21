@@ -8,9 +8,10 @@
  * @param  dir es el directorio que se esta filtrando
  **/
 int filter_directories(const struct dirent *dir) {
-  if ( (strcmp(dir->d_name, ".")  == 0) ||
-       (strcmp(dir->d_name, "..") == 0)    )
-   return SHOW_HIDDEN_FILES;
+  int is_hidden = (dir->d_name[0] == '.') || (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0);
+
+  if (is_hidden && dir->d_type == DT_DIR)
+    return 0;
 
   if (dir->d_type == DT_DIR)
     return 1;
@@ -23,8 +24,8 @@ int filter_directories(const struct dirent *dir) {
  * @param  dir es el directorio que se esta filtrando
  **/
 int filter_files(const struct dirent *dir) {
-  if (dir->d_name[0] == '.')
-    return SHOW_HIDDEN_FILES;
+  if (dir->d_name[0] == '.' && dir->d_type != DT_DIR)
+    return 0;
 
   if (dir->d_type != DT_DIR)
     return 1;
